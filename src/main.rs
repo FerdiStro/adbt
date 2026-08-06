@@ -2,6 +2,7 @@ mod app;
 mod render_header;
 mod render_utils;
 mod renderer;
+mod adb_executer;
 
 use crate::app::{App, Navigation};
 use color_eyre::Result;
@@ -15,6 +16,16 @@ fn main() -> Result<()> {
 }
 
 fn create_app() -> Result<()> {
+    let is_set_up = match adb_executer::check_deps() {
+        Some(_) => true,
+        _ => false,
+    };
+    
+    if !is_set_up {
+        // panic!("Deps not installed and ready yet.")
+    }
+
+
     let mut app = App::new();
     let mut terminal = ratatui::init();
 
@@ -29,7 +40,7 @@ fn create_app() -> Result<()> {
                     if (!app.command_line_state.is_selected) {
                         app.navigation = app.navigation.on_key_code(key.code);
                     } else {
-                        app.navigation =  app.command_line_state.handle_key(key.code);
+                        app.navigation = app.command_line_state.handle_key(key.code);
                     }
                 }
             }
