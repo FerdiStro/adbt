@@ -1,8 +1,9 @@
+mod adb_executer;
 mod app;
+pub mod render_device_module;
 mod render_header;
 mod render_utils;
 mod renderer;
-mod adb_executer;
 
 use crate::app::{App, Navigation};
 use color_eyre::Result;
@@ -20,14 +21,15 @@ fn create_app() -> Result<()> {
         Some(_) => true,
         _ => false,
     };
-    
-    if !is_set_up {
-        // panic!("Deps not installed and ready yet.")
-    }
 
+    if !is_set_up {
+        panic!("Deps not installed and ready yet.")
+    }
 
     let mut app = App::new();
     let mut terminal = ratatui::init();
+
+    adb_executer::check_devices(&mut app);
 
     loop {
         //render
