@@ -1,19 +1,27 @@
-use crate::app::{App, DebugState};
+use crate::app::{App, DebugState, Navigation};
 use ratatui::Frame;
 use ratatui::layout::Rect;
 use ratatui::widgets::{Block, Paragraph};
 use std::sync::{Arc, Mutex};
+use ratatui::crossterm::event::KeyCode;
 use ratatui::prelude::{Line, Modifier, Span, Style};
 use ratatui::style::Color;
 
 pub struct DeviceModule {
     pub device_id_list: Arc<Mutex<Vec<String>>>,
+    pub is_keyboard_listener: bool,
 }
 
 impl DeviceModule {
+
+    pub(crate) fn handle_key(&self, p0: KeyCode) -> Option<Navigation> {
+        None
+    }
+
     pub fn default() -> DeviceModule {
         Self {
             device_id_list: Arc::new(Mutex::new(Vec::new())),
+            is_keyboard_listener: false,
         }
     }
 }
@@ -24,9 +32,9 @@ pub(crate) fn render_device_module(_frame: &mut Frame, area: Rect, _app: &mut Ap
     _frame.render_widget(block.clone(), area);
 
     let inner_area = block.inner(area);
-    
+
     if let Ok(device_list_lock) = _app.device_module.device_id_list.lock() {
-        
+
         let lines: Vec<Line> = device_list_lock
             .iter()
             .enumerate()

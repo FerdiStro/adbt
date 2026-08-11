@@ -1,8 +1,8 @@
 use crate::app::App;
-use crate::{render_device_module, render_header};
+use crate::render::render_device_module::render_device_module;
+use crate::render::render_header::render_header;
 use ratatui::Frame;
 use ratatui::layout::Constraint::{Fill, Length, Ratio};
-use ratatui::layout::Flex::Legacy;
 use ratatui::layout::{Direction, Layout};
 
 pub fn render(_frame: &mut Frame, _app: &mut App) {
@@ -11,7 +11,7 @@ pub fn render(_frame: &mut Frame, _app: &mut App) {
         .constraints([Length(12), Fill(1)])
         .areas(_frame.area());
 
-    render_header::render_header(_frame, header, _app);
+    render_header(_frame, header, _app);
 
     let [top_body, bottom_body] = Layout::default()
         .direction(Direction::Vertical)
@@ -23,5 +23,5 @@ pub fn render(_frame: &mut Frame, _app: &mut App) {
         .constraints([Ratio(1, 6), Ratio(1, 3), Ratio(1, 3)])
         .areas(top_body);
 
-    render_device_module::render_device_module(_frame, device_area, _app);
+    render_device_module(_frame, device_area, _app);
 }

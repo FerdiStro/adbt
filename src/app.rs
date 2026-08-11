@@ -1,6 +1,7 @@
-use crate::app::Navigation::{CANCEL, COMMAND_ROW, DOWN, NULL, UP};
-use crate::render_device_module::DeviceModule;
-use crate::render_header::CommandLineState;
+use crate::app::Navigation::{CANCEL, COMMAND_ROW, NULL, UP};
+
+use crate::render::render_device_module::DeviceModule;
+use crate::render::render_header::CommandLineState;
 use ratatui::crossterm::event::KeyCode;
 use std::sync::{Arc, LockResult, Mutex, MutexGuard};
 

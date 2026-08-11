@@ -5,67 +5,12 @@ use ratatui::layout::Constraint::Length;
 use ratatui::layout::{Direction, Layout, Rect};
 use ratatui::prelude::{Color, Style};
 use ratatui::widgets::{Block, Paragraph};
-use regex::Regex;
+use crate::commands::command_utils::{Command, CommandMatcher};
 
 pub struct CommandLineState {
     pub is_selected: bool,
     pub command_string: String,
     pub execute_command: Command,
-}
-
-pub struct Command {
-    pub command_matcher: CommandMatcher,
-}
-
-impl Command {
-    pub fn default() -> Self {
-        Self {
-            command_matcher: CommandMatcher::NULL,
-        }
-    }
-
-    pub fn get_command_matcher(&self, command: &str) -> CommandMatcher {
-        [
-            self.get_command_matcher_helper::<2>(command, CommandMatcher::QUIT),
-            // self.get_command_matcher_helper::<2>(command, CommandMatcher::TEST),
-        ]
-        .into_iter()
-        .find_map(|m| m)
-        .unwrap_or(CommandMatcher::NULL)
-    }
-
-    fn get_command_matcher_helper<const N: usize>(
-        &self,
-        command: &str,
-        check_command: CommandMatcher,
-    ) -> Option<CommandMatcher> {
-        if self
-            .get_command_matcher_strings(&check_command)
-            .iter()
-            .any(|matcher| Regex::new(matcher).unwrap().is_match(command))
-        {
-            Some(check_command)
-        } else {
-            None
-        }
-    }
-
-    fn get_command_matcher_strings(
-        &self,
-        _command_matcher: &CommandMatcher,
-    ) -> &'static [&'static str] {
-        match _command_matcher {
-            CommandMatcher::NULL => &[],
-            CommandMatcher::QUIT => &["q", "quit"],
-            CommandMatcher::TEST => &["t", "test"],
-        }
-    }
-}
-
-pub enum CommandMatcher {
-    NULL,
-    QUIT,
-    TEST,
 }
 
 impl CommandLineState {
