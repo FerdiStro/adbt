@@ -1,12 +1,13 @@
+mod adb_executer;
 mod app;
-mod render_header;
-mod render_utils;
-mod renderer;
+mod commands;
+mod render;
 
 use crate::app::{App, Navigation};
 use color_eyre::Result;
 use ratatui::crossterm::event;
 use ratatui::crossterm::event::{Event, KeyEventKind};
+use render::renderer;
 use std::time::Duration;
 
 fn main() -> Result<()> {
@@ -15,8 +16,19 @@ fn main() -> Result<()> {
 }
 
 fn create_app() -> Result<()> {
+    let is_set_up = match adb_executer::check_deps() {
+        Some(_) => true,
+        _ => false,
+    };
+
+    if !is_set_up {
+        panic!("Deps not installed and ready yet.")
+    }
+
     let mut app = App::new();
     let mut terminal = ratatui::init();
+
+    adb_executer::check_devices(&mut app);
 
     loop {
         //render
@@ -26,11 +38,17 @@ fn create_app() -> Result<()> {
         if event::poll(Duration::from_millis(50))? {
             if let Event::Key(key) = event::read()? {
                 if key.kind == KeyEventKind::Press {
-                    if (!app.command_line_state.is_selected) {
+                    //Main focus should always work
+                    if !app.command_line_state.is_selected {
                         app.navigation = app.navigation.on_key_code(key.code);
                     } else {
-                        app.navigation =  app.command_line_state.handle_key(key.code);
+                        app.navigation = app.command_line_state.handle_key(key.code);
                     }
+
+                    app.navigation = app
+                        .device_module
+                        .handle_key(key.code)
+                        .unwrap_or(app.navigation);
                 }
             }
         }
